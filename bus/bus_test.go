@@ -7,22 +7,16 @@ import (
 )
 
 type handler struct {
-
 }
 
 const (
-	testKey = 1
+	testKey    = 1
 	testStatus = 2
-	testData = 3
-	testId = "123"
+	testData   = 3
+	testId     = "123"
 )
 
-func (h *handler) Handle(key int, value interface{}) {
-	resource, ok := value.(*Resource)
-	if !ok {
-		l.Trace("Failed to convert to resource")
-		return
-	}
+func (h *handler) Handle(key int, resource *Resource) {
 	l.TraceF("key is %d, status is %d, id is %s, data is %d", key, resource.Status, resource.Id, resource.Data.(int))
 	t, ok := resource.Context.(*testing.T)
 	if !ok {

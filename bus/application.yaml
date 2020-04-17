@@ -1,2 +1,4 @@
 log:
   level: 3
+bus:
+  cacheNum: 20

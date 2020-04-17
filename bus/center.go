@@ -16,13 +16,12 @@ type center struct {
 
 type message struct {
 	key   int
-	value interface{}
+	value *Resource
 }
-
 
 type node struct {
 	subscriber Subscriber
-	channel chan interface{}
+	channel    chan interface{}
 }
 
 func (c *center) subscribe(key int, subscriber Subscriber) {
@@ -46,6 +45,7 @@ func (c *center) subscribe(key int, subscriber Subscriber) {
 	n := new(node)
 	n.subscriber = subscriber
 	cacheNum := config.GetInt("bus.cacheNum")
+	l.Trace("Bus cache number is ", cacheNum)
 	if cacheNum == 0 {
 		n.channel = make(chan interface{})
 	} else {
@@ -107,7 +107,7 @@ func (c *center) channels(key int) (*list.List, error) {
 	return nil, errors.New(fmt.Sprintf("No subscriber"))
 }
 
-func (c *center) publish(key int, value interface{}) error {
+func (c *center) publish(key int, value *Resource) error {
 	channels, err := c.channels(key)
 	if err != nil {
 		l.WarningF("Failed to get channels of %d, error: %s", key, err.Error())

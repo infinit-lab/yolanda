@@ -13,7 +13,7 @@ type Resource struct {
 }
 
 type Subscriber interface {
-	Handle(key int, value interface{})
+	Handle(key int, value *Resource)
 }
 
 var c *center
@@ -40,4 +40,3 @@ func Subscribe(key int, subscriber Subscriber) {
 func Unsubscribe(key int, subscriber Subscriber) {
 	c.unsubscribe(key, subscriber)
 }
-
