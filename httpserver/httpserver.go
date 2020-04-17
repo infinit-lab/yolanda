@@ -1,7 +1,7 @@
 package httpserver
 
 import (
-	l "../logutils"
+	l "github.com/infinit-lab/youlanda/logutils"
 	"context"
 	"encoding/json"
 	"errors"

@@ -1,8 +1,8 @@
 package cache
 
 import (
-	"../config"
-	l "../logutils"
+	"github.com/infinit-lab/yolanda/config"
+	l "github.com/infinit-lab/yolanda/logutils"
 	"sync"
 	"time"
 )

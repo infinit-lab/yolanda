@@ -1,7 +1,7 @@
 package logutils
 
 import (
-	"../config"
+	"github.com/infinit-lab/yolanda/config"
 	"io"
 	"log"
 	"os"
