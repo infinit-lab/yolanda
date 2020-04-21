@@ -1,7 +1,7 @@
 package httpserver
 
 import (
-	l "../logutils"
+	l "github.com/infinit-lab/yolanda/logutils"
 	"flag"
 	"github.com/gorilla/websocket"
 	"io/ioutil"

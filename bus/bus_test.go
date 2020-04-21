@@ -1,7 +1,7 @@
 package bus
 
 import (
-	l "../logutils"
+	l "github.com/infinit-lab/yolanda/logutils"
 	"testing"
 	"time"
 )
