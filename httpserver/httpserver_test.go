@@ -1,9 +1,9 @@
 package httpserver
 
 import (
-	l "github.com/infinit-lab/yolanda/logutils"
 	"flag"
 	"github.com/gorilla/websocket"
+	l "github.com/infinit-lab/yolanda/logutils"
 	"io/ioutil"
 	"net/http"
 	"net/url"
@@ -104,10 +104,10 @@ func TestListenAndServe(t *testing.T) {
 		time.Sleep(100 * time.Millisecond)
 		defer wg.Done()
 		addr := flag.String("Websocket Client", "127.0.0.1:8088", "Websocket Server")
-		u := url.URL {
+		u := url.URL{
 			Scheme: "ws",
-			Host: *addr,
-			Path: "/api/2/1",
+			Host:   *addr,
+			Path:   "/api/2/1",
 		}
 		conn, _, err := websocket.DefaultDialer.Dial(u.String(), nil)
 		if err != nil {
@@ -147,4 +147,3 @@ func TestListenAndServe(t *testing.T) {
 	l.Trace("ListenAndServe")
 	_ = ListenAndServe()
 }
-

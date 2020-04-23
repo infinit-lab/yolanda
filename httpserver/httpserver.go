@@ -1,10 +1,10 @@
 package httpserver
 
 import (
-	l "github.com/infinit-lab/yolanda/logutils"
 	"context"
 	"encoding/json"
 	"errors"
+	l "github.com/infinit-lab/yolanda/logutils"
 	"io/ioutil"
 	"net"
 	"net/http"

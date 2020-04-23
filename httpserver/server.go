@@ -1,12 +1,12 @@
 package httpserver
 
 import (
-	"github.com/infinit-lab/yolanda/config"
-	l "github.com/infinit-lab/yolanda/logutils"
 	"container/list"
 	"errors"
 	"fmt"
 	"github.com/gorilla/websocket"
+	"github.com/infinit-lab/yolanda/config"
+	l "github.com/infinit-lab/yolanda/logutils"
 	"net/http"
 	"strings"
 	"sync"

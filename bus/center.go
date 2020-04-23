@@ -1,11 +1,11 @@
 package bus
 
 import (
-	"github.com/infinit-lab/yolanda/config"
-	l "github.com/infinit-lab/yolanda/logutils"
 	"container/list"
 	"errors"
 	"fmt"
+	"github.com/infinit-lab/yolanda/config"
+	l "github.com/infinit-lab/yolanda/logutils"
 	"sync"
 )
 

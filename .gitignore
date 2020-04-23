@@ -5,7 +5,6 @@
 *.so
 *.dylib
 *.log
-*.mod
 *.sum
 
 # Test binary, built with `go test -c`
