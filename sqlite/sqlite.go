@@ -17,6 +17,8 @@ type Column struct {
 	Name    string
 	Type    string
 	Default string
+	Index   bool
+	Unique  bool
 }
 
 type Table struct {
@@ -82,6 +84,17 @@ func (s *Sqlite) InitializeTable(t Table) error {
 			_, err := s.Exec(sqlString)
 			if err != nil {
 				return err
+			}
+			if column.Index {
+				sqlString := "CREATE "
+				if column.Unique {
+					sqlString += "UNIQUE "
+				}
+				sqlString = sqlString + "INDEX " + column.Name + "_index ON " + t.Name + " (" + column.Name + ")"
+				_, err := s.Exec(sqlString)
+				if err != nil {
+					return err
+				}
 			}
 		}
 	}

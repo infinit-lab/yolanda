@@ -23,11 +23,14 @@ func TestSqlite_InitializeTable(t *testing.T) {
 				Name:    "name",
 				Type:    "VARCHAR(32)",
 				Default: "",
+				Index:   true,
+				Unique:  true,
 			},
 			{
 				Name:    "age",
 				Type:    "INTEGER",
 				Default: "18",
+				Index:   true,
 			},
 		},
 	}
