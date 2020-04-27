@@ -33,6 +33,15 @@ func PublishResource(key int, status int, id string, data interface{}, context i
 	return c.publish(key, r)
 }
 
+func PublishResourceDelay(key int, status int, id string, data interface{}, context interface{}, delayMs int) error {
+	r := new(Resource)
+	r.Status = status
+	r.Id = id
+	r.Data = data
+	r.Context = context
+	return c.publishDelay(key, r, delayMs)
+}
+
 func Subscribe(key int, subscriber Subscriber) {
 	c.subscribe(key, subscriber)
 }

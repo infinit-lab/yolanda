@@ -54,6 +54,16 @@ func TestPublishResource(t *testing.T) {
 	time.Sleep(100 * time.Millisecond)
 }
 
+func TestPublishResourceDelay(t *testing.T) {
+	for i := 0; i < 10; i++ {
+		err := PublishResourceDelay(testKey, testStatus, testId, testData, t, 1000*i)
+		if err != nil {
+			t.Error("Failed to PublishResourceDelay")
+		}
+	}
+	time.Sleep(15000 * time.Millisecond)
+}
+
 func TestUnsubscribe(t *testing.T) {
 	Unsubscribe(testKey, &h)
 }

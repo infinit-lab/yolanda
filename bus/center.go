@@ -7,6 +7,7 @@ import (
 	"github.com/infinit-lab/yolanda/config"
 	l "github.com/infinit-lab/yolanda/logutils"
 	"sync"
+	"time"
 )
 
 type center struct {
@@ -124,5 +125,13 @@ func (c *center) publish(key int, value *Resource) error {
 			l.Error("Failed to convert to node")
 		}
 	}
+	return nil
+}
+
+func (c *center) publishDelay(key int, value *Resource, delayMs int) error {
+	go func() {
+		time.Sleep(time.Duration(delayMs) * time.Millisecond)
+		_ = c.publish(key, value)
+	}()
 	return nil
 }
