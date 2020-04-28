@@ -90,7 +90,7 @@ func (s *Sqlite) InitializeTable(t Table) error {
 				if column.Unique {
 					sqlString += "UNIQUE "
 				}
-				sqlString = sqlString + "INDEX " + column.Name + "_index ON " + t.Name + " (" + column.Name + ")"
+				sqlString = sqlString + "INDEX " + column.Name + "_" + t.Name + "_index ON " + t.Name + " (" + column.Name + ")"
 				_, err := s.Exec(sqlString)
 				if err != nil {
 					return err
