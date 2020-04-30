@@ -14,6 +14,7 @@ func init() {
 		log.Println("Failed to load application.yaml, error: ", err)
 		os.Exit(1)
 	}
+	reader.exec()
 }
 
 func Exec() {
