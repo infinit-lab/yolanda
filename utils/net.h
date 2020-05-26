@@ -21,4 +21,6 @@ typedef struct _T_ADAPTER {
 
 int GetAdapter(int i, PT_ADAPTER pAdapter);
 
+int SetAdapter(PT_ADAPTER pAdapter);
+
 #endif //__NET_H__
