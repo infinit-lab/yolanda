@@ -7,12 +7,12 @@ package utils
 import "C"
 import (
 	"fmt"
-	"unsafe"
-	"net"
-	"io/ioutil"
-	"strings"
-	"strconv"
 	"github.com/infinit-lab/yolanda/logutils"
+	"io/ioutil"
+	"net"
+	"strconv"
+	"strings"
+	"unsafe"
 )
 
 func getGateway(name string) (string, error) {
@@ -33,8 +33,8 @@ func getGateway(name string) (string, error) {
 				logutils.Error("Failed to ParseInt. error: ", err)
 				return "", err
 			}
-			return fmt.Sprintf("%d.%d.%d.%d", byte(gateway), byte(gateway >> 8),
-				byte(gateway >> 16), byte(gateway >> 24)), nil
+			return fmt.Sprintf("%d.%d.%d.%d", byte(gateway), byte(gateway>>8),
+				byte(gateway>>16), byte(gateway>>24)), nil
 		}
 	}
 	return "", nil
