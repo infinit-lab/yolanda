@@ -6,6 +6,7 @@ package utils
 */
 import "C"
 import (
+	"errors"
 	"fmt"
 	"github.com/infinit-lab/yolanda/logutils"
 	"io/ioutil"
@@ -74,4 +75,18 @@ func GetNetworkInfo() ([]*Adapter, error) {
 	}
 
 	return adapters, nil
+}
+
+func SetAdapter(adapter *Adapter) error {
+	var a C.struct__T_ADAPTER
+	GoStringToCArray(adapter.Name, unsafe.Pointer(&a.name[0]), nameLength)
+	GoStringToCArray(adapter.Ip, unsafe.Pointer(&a.ip[0]), addrLength)
+	GoStringToCArray(adapter.Mask, unsafe.Pointer(&a.mask[0]), addrLength)
+	GoStringToCArray(adapter.Gateway, unsafe.Pointer(&a.gateway[0]), addrLength)
+	ret := C.SetAdapter(&a)
+	if ret != 0 {
+		logutils.Error("Failed to SetAdapter.")
+		return errors.New("设置网卡失败")
+	}
+	return nil
 }

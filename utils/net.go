@@ -30,3 +30,12 @@ func CArrayToGoString(cArray unsafe.Pointer, size int) string {
 	}
 	return string(goArray)
 }
+
+func GoStringToCArray(str string, cArray unsafe.Pointer, size int) {
+	goArray := []byte(str)
+	p := uintptr(cArray)
+	for i := 0; i < size && i < len(goArray); i++ {
+		*(*byte)(unsafe.Pointer(p)) = goArray[i]
+		p += unsafe.Sizeof(goArray[i])
+	}
+}

@@ -49,7 +49,7 @@ func GetNetworkInfo() ([]*Adapter, error) {
 func SetAdapter(adapter *Adapter) error {
 	cmd := new(exec.Cmd)
 	cmd.Path = "netsh"
-	cmd.Args = []string {
+	cmd.Args = []string{
 		"netsh",
 		"interface",
 		"ip",

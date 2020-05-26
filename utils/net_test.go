@@ -34,12 +34,12 @@ func TestGetNetworkInfo(t *testing.T) {
 		adapter.Ip = ""
 		for i, s := range sections {
 			adapter.Ip += s
-			if i != len(sections) - 1 {
+			if i != len(sections)-1 {
 				adapter.Ip += "."
 			}
 		}
 		data, _ = json.Marshal(adapter)
-		logutils.TraceF("%d. %s", i + 1, string(data))
+		logutils.TraceF("%d. %s", i+1, string(data))
 		err = SetAdapter(adapter)
 		if err != nil {
 			t.Error("Failed to SetAdapter. error: ", err)
