@@ -9,6 +9,7 @@ import "C"
 import (
 	"github.com/infinit-lab/yolanda/logutils"
 	"net"
+	"os/exec"
 	"strings"
 	"unsafe"
 )
@@ -43,4 +44,27 @@ func GetNetworkInfo() ([]*Adapter, error) {
 		adapter.Name = i.Name
 	}
 	return adapters, nil
+}
+
+func SetAdapter(adapter *Adapter) error {
+	cmd := new(exec.Cmd)
+	cmd.Path = "netsh"
+	cmd.Args = []string {
+		"netsh",
+		"interface",
+		"ip",
+		"set",
+		"address",
+		"\"" + adapter.Name + "\"",
+		"static",
+		adapter.Ip,
+		adapter.Mask,
+		adapter.Gateway,
+		"1",
+	}
+	if err := cmd.Run(); err != nil {
+		logutils.Error("Failed to Run. error: ", err)
+		return err
+	}
+	return nil
 }
