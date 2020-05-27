@@ -11,4 +11,5 @@ func TestGetCpuUseRate(t *testing.T) {
 		t.Error("Failed to get cpu use rate")
 	}
 	log.Print("GetCpuUseRate: ", rate)
+	_, _ = GetCpuID()
 }

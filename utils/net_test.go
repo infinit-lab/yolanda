@@ -40,9 +40,11 @@ func TestGetNetworkInfo(t *testing.T) {
 		}
 		data, _ = json.Marshal(adapter)
 		logutils.TraceF("%d. %s", i+1, string(data))
-		err = SetAdapter(adapter)
-		if err != nil {
-			t.Error("Failed to SetAdapter. error: ", err)
-		}
+		/*
+			err = SetAdapter(adapter)
+			if err != nil {
+				t.Error("Failed to SetAdapter. error: ", err)
+			}
+		*/
 	}
 }
