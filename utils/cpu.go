@@ -3,19 +3,26 @@ package utils
 /*
 #include <cpuid.h>
 #include <stdio.h>
+#include <string.h>
 
-void getCpuId() {
-	char id[256] = {0};
+typedef struct _T_CPU_ID {
+	char id[32];
+}T_CPU_ID, *PT_CPU_ID;
+
+void getCpuId(PT_CPU_ID id) {
 	unsigned int cpuId[4] = {0};
-
-	__cpuid(0, cpuId[0], cpuId[1], cpuId[2], cpuId[3]);
-	sprintf(id, "%08x %08x %08x %08x", cpuId[0], cpuId[1], cpuId[2], cpuId[3]);
-	printf("%s\n", id);
+	memset(id, 0, sizeof(T_CPU_ID));
+	__cpuid(1, cpuId[0], cpuId[1], cpuId[2], cpuId[3]);
+	sprintf(id->id, "%08x%08x", cpuId[3], cpuId[0]);
 }
 */
 import "C"
+import (
+	"unsafe"
+)
 
 func GetCpuID() (string, error) {
-	C.getCpuId()
-	return "", nil
+	var id C.struct__T_CPU_ID
+	C.getCpuId(&id)
+	return CArrayToGoString(unsafe.Pointer(&id.id[0]), 32), nil
 }
