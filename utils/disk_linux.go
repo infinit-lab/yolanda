@@ -4,11 +4,10 @@ package utils
 
 import (
 	"github.com/infinit-lab/yolanda/logutils"
-	"os/exec"
-	"strings"
-	"log"
-	"regexp"
 	"io/ioutil"
+	"os/exec"
+	"regexp"
+	"strings"
 )
 
 func GetDiskSerialNumber() ([]string, error) {
@@ -23,7 +22,7 @@ func GetDiskSerialNumber() ([]string, error) {
 	for _, line := range lines {
 		sections := strings.Split(line, ":")
 		if len(sections) < 2 {
-			continue;
+			continue
 		}
 		reg := regexp.MustCompile("UUID=\".*\" T")
 		data := reg.Find([]byte(sections[1]))
@@ -49,7 +48,7 @@ func GetDiskSerialNumber() ([]string, error) {
 		}
 		sections := strings.Split(line, " / ")
 		if len(sections) < 2 {
-			continue;
+			continue
 		}
 		section := strings.ReplaceAll(sections[0], " ", "")
 		if strings.Contains(section, "UUID=") {
@@ -64,4 +63,3 @@ func GetDiskSerialNumber() ([]string, error) {
 	}
 	return uuidList, nil
 }
-
