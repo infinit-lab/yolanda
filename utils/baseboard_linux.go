@@ -14,5 +14,5 @@ func GetBaseBoardUUID() (string, error) {
 		return "", err
 	}
 	line := strings.ReplaceAll(string(out), "\n", "")
-	return string(out), nil
+	return line, nil
 }
