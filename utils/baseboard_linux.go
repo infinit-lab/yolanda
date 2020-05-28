@@ -3,6 +3,7 @@ package utils
 import (
 	"github.com/infinit-lab/yolanda/logutils"
 	"os/exec"
+	"strings"
 )
 
 func GetBaseBoardUUID() (string, error) {
@@ -12,5 +13,6 @@ func GetBaseBoardUUID() (string, error) {
 		logutils.Error("Failed to CombineOutput. error: ", err)
 		return "", err
 	}
+	line = strings.ReplaceAll(string(out), "\n", "")
 	return string(out), nil
 }
