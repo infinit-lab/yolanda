@@ -13,6 +13,6 @@ func GetBaseBoardUUID() (string, error) {
 		logutils.Error("Failed to CombineOutput. error: ", err)
 		return "", err
 	}
-	line = strings.ReplaceAll(string(out), "\n", "")
+	line := strings.ReplaceAll(string(out), "\n", "")
 	return string(out), nil
 }
