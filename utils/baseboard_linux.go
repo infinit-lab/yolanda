@@ -1,3 +1,5 @@
+// +build linux
+
 package utils
 
 import (
@@ -14,5 +16,7 @@ func GetBaseBoardUUID() (string, error) {
 		return "", err
 	}
 	line := strings.ReplaceAll(string(out), "\n", "")
+	line = strings.ReplaceAll(line, "\r", "")
+	line = strings.ReplaceAll(line, " ", "")
 	return line, nil
 }

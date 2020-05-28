@@ -19,6 +19,7 @@ func GetBaseBoardUUID() (string, error) {
 	for _, line := range lines {
 		if line != "" && strings.Contains(line, "UUID") == false {
 			line = strings.ReplaceAll(line, " ", "")
+			line = strings.ReplaceAll(line, "\r", "")
 			return line, nil
 		}
 	}

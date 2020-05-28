@@ -13,7 +13,7 @@ void getCpuId(PT_CPU_ID id) {
 	unsigned int cpuId[4] = {0};
 	memset(id, 0, sizeof(T_CPU_ID));
 	__cpuid(1, cpuId[0], cpuId[1], cpuId[2], cpuId[3]);
-	sprintf(id->id, "%08x%08x", cpuId[3], cpuId[0]);
+	sprintf(id->id, "%08X%08X", cpuId[3], cpuId[0]);
 }
 */
 import "C"
