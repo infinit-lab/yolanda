@@ -26,7 +26,7 @@ type IWebsocketHandler interface {
 }
 
 type IFilter interface {
-	Filter(r *http.Request) error
+	Filter(r *http.Request, checkToken bool) error
 }
 
 type ITokenChecker interface {

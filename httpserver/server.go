@@ -94,7 +94,7 @@ func (s *httpServer) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 		for f := s.filters.Front(); f != nil; f = f.Next() {
 			if filter, ok := f.Value.(IFilter); ok {
-				if err := filter.Filter(r); err != nil {
+				if err := filter.Filter(r, checkToken); err != nil {
 					l.Error("Failed to filter. error: ", err)
 					ResponseError(w, err.Error(), http.StatusBadRequest)
 					return
