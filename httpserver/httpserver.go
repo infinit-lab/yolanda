@@ -4,6 +4,8 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
+	"fmt"
+	"github.com/infinit-lab/yolanda/config"
 	l "github.com/infinit-lab/yolanda/logutils"
 	"io/ioutil"
 	"net"
@@ -35,6 +37,14 @@ type ITokenChecker interface {
 
 func ListenAndServe() error {
 	server.isServe = true
+	port := config.GetInt("server.port")
+	l.Trace("Get port ", port)
+	if port == 0 {
+		port = 8088
+		l.Info("Port reset to ", port)
+	}
+	addr := fmt.Sprintf("0.0.0.0:%d", port)
+	server.server.Addr = addr
 	return server.server.ListenAndServe()
 }
 

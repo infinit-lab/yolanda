@@ -3,7 +3,6 @@ package httpserver
 import (
 	"container/list"
 	"errors"
-	"fmt"
 	"github.com/gorilla/websocket"
 	"github.com/infinit-lab/yolanda/config"
 	l "github.com/infinit-lab/yolanda/logutils"
@@ -48,21 +47,13 @@ type httpServer struct {
 var server httpServer
 
 func init() {
-	port := config.GetInt("server.port")
-	l.Trace("Get port ", port)
-	if port == 0 {
-		port = 8088
-		l.Info("Port reset to ", port)
-	}
 	dir := config.GetString("server.dir")
 	l.Trace("Get dir ", dir)
 	if len(dir) == 0 {
 		dir = "www"
 		l.Info("Dir reset to ", dir)
 	}
-	addr := fmt.Sprintf("%s:%d", "0.0.0.0", port)
 	server.server = http.Server{
-		Addr:    addr,
 		Handler: &server,
 	}
 	server.fileHandler = http.FileServer(http.Dir(dir))
