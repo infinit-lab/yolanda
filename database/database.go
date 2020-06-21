@@ -6,6 +6,8 @@ import (
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/infinit-lab/yolanda/config"
 	l "github.com/infinit-lab/yolanda/logutils"
+	"reflect"
+	"strings"
 	"time"
 )
 
@@ -109,4 +111,142 @@ func Begin() (*sql.Tx, error) {
 		return nil, errors.New("Mysql未连接")
 	}
 	return pool.Begin()
+}
+
+func reflectValue(value interface{}, omit string) (tags []string, fields []interface{}, err error) {
+	v := reflect.ValueOf(value)
+	if v.Kind() != reflect.Ptr {
+		return nil, nil, errors.New("value must be ptr")
+	}
+	if value == nil {
+		return nil, nil, errors.New("value should not be nil")
+	}
+	e := v.Type().Elem()
+	if e.Kind() != reflect.Struct {
+		return nil, nil, errors.New("value must be struct")
+	}
+
+	n := e.NumField()
+	for i := 0; i < n; i++ {
+		field := e.Field(i)
+		tag := field.Tag.Get("db")
+		if tag == "" {
+			continue
+		}
+		patterns := strings.Split(tag, ",")
+		t := patterns[0]
+		isSkip := false
+		for i, pattern := range patterns {
+			if i == 0 {
+				continue
+			}
+			if strings.TrimSpace(pattern) == omit {
+				isSkip = true
+				break
+			}
+		}
+		if isSkip {
+			continue
+		}
+		f := v.Elem().FieldByName(field.Name)
+		if reflect.ValueOf(f.Interface()).Kind() == reflect.Ptr {
+			continue
+		}
+		if !f.CanAddr() {
+			continue
+		}
+		tags = append(tags, t)
+		fields = append(fields, f.Addr().Interface())
+	}
+	if len(tags) == 0 {
+		return nil, nil, errors.New("no tag")
+	}
+	err = nil
+	return
+}
+
+func SingleTableGet(key, keyName string, value interface{}, tableName string) error {
+	tags, fields, err := reflectValue(value, "omitget")
+	if err != nil {
+		l.Error("Failed to reflectValue. error: ", err)
+		return err
+	}
+	sqlString := "SELECT "
+	for i, tag := range tags {
+		sqlString += "`" + tag + "`"
+		if i != len(tags) - 1 {
+			sqlString += ", "
+		}
+	}
+	sqlString += " FROM " + tableName + " WHERE `" + keyName + "` = ?"
+	rows, err := Query(sqlString, key)
+	if err != nil {
+		return err
+	}
+	defer func() {
+		_ = rows.Close()
+	}()
+
+	if !rows.Next() {
+		return errors.New("not found")
+	}
+
+	err = rows.Scan(fields...)
+	if err != nil {
+		l.Error("Failed to Scan. error: ", err)
+		return err
+	}
+	return nil
+}
+
+func SingleTableCreate(value interface{}, tableName string) error {
+	tags, fields, err := reflectValue(value, "omitcreate")
+	if err != nil {
+		l.Error("Failed to reflectValue. error: ", err)
+		return err
+	}
+	sqlString := "INSERT INTO " + tableName + " ("
+	for i, tag := range tags {
+		sqlString += "`" + tag + "`"
+		if i != len(tags) - 1 {
+			sqlString += ", "
+		}
+	}
+	sqlString += ") VALUES ("
+	for i, _ := range tags {
+		sqlString += "?"
+		if i != len(tags) - 1 {
+			sqlString += ", "
+		}
+	}
+	sqlString += ")"
+	_, err = Exec(sqlString, fields...)
+	return err
+}
+
+func SingleTableUpdate(key, keyName string, value interface{}, tableName string) error {
+	tags, fields, err := reflectValue(value, "omitupdate")
+	if err != nil {
+		l.Error("Failed to reflectValue. error: ", err)
+		return err
+	}
+	sqlString := "UPDATE " + tableName + " SET "
+	for i, tag := range tags {
+		sqlString += "`"
+		sqlString += tag
+		sqlString += "` = ?"
+		if i != len(tags) - 1 {
+			sqlString += ", "
+		}
+	}
+	sqlString += " WHERE `" + keyName + "` = ?"
+	fields = append(fields, key)
+	_, err = Exec(sqlString, fields...)
+	return err
+}
+
+func SingleTableDelete(key, keyName, tableName string) error {
+	sqlString := "DELETE FROM " + tableName + " WHERE `" + keyName + "` = ?"
+	_, err := Exec(sqlString, key)
+	return err
 }
