@@ -165,11 +165,11 @@ func reflectValue(value interface{}, omit string) (tags []string, fields []inter
 	return
 }
 
-func SingleTableGet(key, keyName string, value interface{}, tableName string) error {
+func getSqlString(keyName string, value interface{}, tableName string) (string, []interface{}, error) {
 	tags, fields, err := reflectValue(value, "omitget")
 	if err != nil {
 		l.Error("Failed to reflectValue. error: ", err)
-		return err
+		return "", nil, err
 	}
 	sqlString := "SELECT "
 	for i, tag := range tags {
@@ -179,6 +179,15 @@ func SingleTableGet(key, keyName string, value interface{}, tableName string) er
 		}
 	}
 	sqlString += " FROM " + tableName + " WHERE `" + keyName + "` = ?"
+	return sqlString, fields, nil
+}
+
+func SingleTableGet(key, keyName string, value interface{}, tableName string) error {
+	sqlString, fields, err := getSqlString(keyName, value, tableName)
+	if err != nil {
+		return err
+	}
+	sqlString += " LIMIT 1"
 	rows, err := Query(sqlString, key)
 	if err != nil {
 		return err
@@ -197,6 +206,35 @@ func SingleTableGet(key, keyName string, value interface{}, tableName string) er
 		return err
 	}
 	return nil
+}
+
+func SingleTableGetList(key, keyName string, value interface{}, tableName string) ([]interface{}, error) {
+	sqlString, _, err := getSqlString(keyName, value, tableName)
+	if err != nil {
+		return nil, err
+	}
+	rows, err := Query(sqlString, key)
+	if err != nil {
+		return nil, err
+	}
+	defer func() {
+		_ = rows.Close()
+	}()
+
+	var values []interface{}
+	for rows.Next() {
+		newValue := reflect.New(reflect.TypeOf(value).Elem()).Interface()
+		_, fields, err := reflectValue(newValue, "omitget")
+		if err != nil {
+			return nil, err
+		}
+		err = rows.Scan(fields...)
+		if err != nil {
+			return nil, err
+		}
+		values = append(values, newValue)
+	}
+	return values, nil
 }
 
 func SingleTableCreate(value interface{}, tableName string) error {

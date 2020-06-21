@@ -29,6 +29,14 @@ func TestSingleTableGet(t *testing.T) {
 	}
 	data, _ := json.Marshal(d)
 	logutils.Trace(string(data))
+
+	values, err := SingleTableGetList("123", "code", d, "`test`")
+	if err != nil {
+		t.Error("Failed to SingleTableGetList. error: ", err)
+		return
+	}
+	data, _ = json.Marshal(values)
+	logutils.Trace(string(data))
 }
 
 func TestSingleTableCreate(t *testing.T) {
