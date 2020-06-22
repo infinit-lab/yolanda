@@ -165,7 +165,7 @@ func reflectValue(value interface{}, omit string) (tags []string, fields []inter
 	return
 }
 
-func getSqlString(keyName string, value interface{}, tableName string) (string, []interface{}, error) {
+func getSqlString(keys map[string]string, value interface{}, tableName string) (string, []interface{}, error) {
 	tags, fields, err := reflectValue(value, "omitget")
 	if err != nil {
 		l.Error("Failed to reflectValue. error: ", err)
@@ -178,17 +178,28 @@ func getSqlString(keyName string, value interface{}, tableName string) (string, 
 			sqlString += ", "
 		}
 	}
-	sqlString += " FROM " + tableName + " WHERE `" + keyName + "` = ?"
+	sqlString += " FROM " + tableName
+	if len(keys) > 0 {
+		sqlString += " WHERE "
+		isFirst := true
+		for key, v := range keys {
+			if !isFirst {
+				sqlString += " AND "
+			}
+			isFirst = false
+			sqlString += "`" + key + "` = '" + v +"'"
+		}
+	}
 	return sqlString, fields, nil
 }
 
-func SingleTableGet(key, keyName string, value interface{}, tableName string) error {
-	sqlString, fields, err := getSqlString(keyName, value, tableName)
+func SingleTableGet(keys map[string]string, value interface{}, tableName string) error {
+	sqlString, fields, err := getSqlString(keys, value, tableName)
 	if err != nil {
 		return err
 	}
 	sqlString += " LIMIT 1"
-	rows, err := Query(sqlString, key)
+	rows, err := Query(sqlString)
 	if err != nil {
 		return err
 	}
@@ -208,12 +219,12 @@ func SingleTableGet(key, keyName string, value interface{}, tableName string) er
 	return nil
 }
 
-func SingleTableGetList(key, keyName string, value interface{}, tableName string) ([]interface{}, error) {
-	sqlString, _, err := getSqlString(keyName, value, tableName)
+func SingleTableGetList(keys map[string]string, value interface{}, tableName string) ([]interface{}, error) {
+	sqlString, _, err := getSqlString(keys, value, tableName)
 	if err != nil {
 		return nil, err
 	}
-	rows, err := Query(sqlString, key)
+	rows, err := Query(sqlString)
 	if err != nil {
 		return nil, err
 	}
@@ -262,7 +273,7 @@ func SingleTableCreate(value interface{}, tableName string) error {
 	return err
 }
 
-func SingleTableUpdate(key, keyName string, value interface{}, tableName string) error {
+func SingleTableUpdate(keys map[string]string, value interface{}, tableName string) error {
 	tags, fields, err := reflectValue(value, "omitupdate")
 	if err != nil {
 		l.Error("Failed to reflectValue. error: ", err)
@@ -277,14 +288,37 @@ func SingleTableUpdate(key, keyName string, value interface{}, tableName string)
 			sqlString += ", "
 		}
 	}
-	sqlString += " WHERE `" + keyName + "` = ?"
-	fields = append(fields, key)
+	if len(keys) > 0 {
+		sqlString += " WHERE "
+		isFirst := true
+		for key, v := range keys {
+			if !isFirst {
+				sqlString += " AND "
+			}
+			isFirst = false
+			sqlString += "`" + key + "` = ?"
+			fields = append(fields, v)
+		}
+	}
 	_, err = Exec(sqlString, fields...)
 	return err
 }
 
-func SingleTableDelete(key, keyName, tableName string) error {
-	sqlString := "DELETE FROM " + tableName + " WHERE `" + keyName + "` = ?"
-	_, err := Exec(sqlString, key)
+func SingleTableDelete(keys map[string]string, tableName string) error {
+	if len(keys) == 0 {
+		return errors.New("keys cannot be empty")
+	}
+	var values []interface{}
+	sqlString := "DELETE FROM " + tableName + " WHERE "
+	isFirst := true
+	for key, v := range keys {
+		if !isFirst {
+			sqlString += " AND "
+		}
+		isFirst = false
+		sqlString += "`" + key + "` = ?"
+		values = append(values, v)
+	}
+	_, err := Exec(sqlString, values...)
 	return err
 }

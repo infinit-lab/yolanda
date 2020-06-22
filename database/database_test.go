@@ -22,7 +22,10 @@ func TestSingleTableGet(t *testing.T) {
 	os.Args = append(os.Args, "log.level=3")
 	config.Exec()
 	d := new (testData)
-	err := SingleTableGet("123", "code", d, "`test`")
+	keys := make(map[string]string)
+	keys["code"] = "123"
+	keys["param1"] = "3"
+	err := SingleTableGet(keys, d, "`test`")
 	if err != nil {
 		t.Error("Failed to SingleTableGet. error: ", err)
 		return
@@ -30,7 +33,7 @@ func TestSingleTableGet(t *testing.T) {
 	data, _ := json.Marshal(d)
 	logutils.Trace(string(data))
 
-	values, err := SingleTableGetList("123", "code", d, "`test`")
+	values, err := SingleTableGetList(keys, d, "`test`")
 	if err != nil {
 		t.Error("Failed to SingleTableGetList. error: ", err)
 		return
@@ -51,6 +54,16 @@ func TestSingleTableCreate(t *testing.T) {
 		t.Error("Failed to SingleTableCreate. error: ", err)
 		return
 	}
+
+	keys := make(map[string]string)
+	keys["code"] = "121"
+	d = new (testData)
+	err = SingleTableGet(keys, d, "`test`")
+	if err != nil {
+		t.Fatal("Failed to SingleTableGet. error: ", err)
+	}
+	data, _ := json.Marshal(d)
+	logutils.Trace(string(data))
 }
 
 func TestSingleTableUpdate(t *testing.T) {
@@ -60,17 +73,35 @@ func TestSingleTableUpdate(t *testing.T) {
 	d.Param2 = "Update Hello"
 	d.Param3 = true
 	d.Param4 = 5.17
-	err := SingleTableUpdate("121", "code", d, "`test`")
+	keys := make(map[string]string)
+	keys["code"] = "121"
+	err := SingleTableUpdate(keys, d, "`test`")
 	if err != nil {
 		t.Error("Failed to SingleTableUpdate. error: ", err)
 		return
 	}
+
+	d = new (testData)
+	err = SingleTableGet(keys, d, "`test`")
+	if err != nil {
+		t.Fatal("Failed to SingleTableGet. error: ", err)
+	}
+	data, _ := json.Marshal(d)
+	logutils.Trace(string(data))
 }
 
 func TestSingleTableDelete(t *testing.T) {
-	err := SingleTableDelete("121", "code", "`test`")
+	keys := make(map[string]string)
+	keys["code"] = "121"
+	err := SingleTableDelete(keys, "`test`")
 	if err != nil {
 		t.Error("Failed to SingleTableDelete. error: ", err)
 		return
 	}
+	d := new (testData)
+	err = SingleTableGet(keys, d, "`test`")
+	if err == nil {
+		t.Error("Should not be no error")
+	}
+	logutils.Trace(err)
 }
