@@ -113,22 +113,24 @@ func Begin() (*sql.Tx, error) {
 	return pool.Begin()
 }
 
-func reflectValue(value interface{}, omit string) (tags []string, fields []interface{}, err error) {
-	v := reflect.ValueOf(value)
-	if v.Kind() != reflect.Ptr {
-		return nil, nil, errors.New("value must be ptr")
-	}
-	if value == nil {
-		return nil, nil, errors.New("value should not be nil")
-	}
-	e := v.Type().Elem()
-	if e.Kind() != reflect.Struct {
-		return nil, nil, errors.New("value must be struct")
-	}
+type tagAndField struct {
+	tags []string
+	fields []interface{}
+}
 
-	n := e.NumField()
+func reflectStruct(v reflect.Value, omit string, tagAndField *tagAndField) {
+	if v.Kind() != reflect.Struct {
+		return
+	}
+	t := v.Type()
+	n := t.NumField()
 	for i := 0; i < n; i++ {
-		field := e.Field(i)
+		f := v.Field(i)
+		if f.Kind() == reflect.Struct {
+			reflectStruct(f, omit, tagAndField)
+			continue
+		}
+		field := t.Field(i)
 		tag := field.Tag.Get("db")
 		if tag == "" {
 			continue
@@ -148,16 +150,33 @@ func reflectValue(value interface{}, omit string) (tags []string, fields []inter
 		if isSkip {
 			continue
 		}
-		f := v.Elem().FieldByName(field.Name)
 		if reflect.ValueOf(f.Interface()).Kind() == reflect.Ptr {
 			continue
 		}
 		if !f.CanAddr() {
 			continue
 		}
-		tags = append(tags, t)
-		fields = append(fields, f.Addr().Interface())
+		tagAndField.tags = append(tagAndField.tags, t)
+		tagAndField.fields = append(tagAndField.fields, f.Addr().Interface())
 	}
+}
+
+func reflectValue(value interface{}, omit string) (tags []string, fields []interface{}, err error) {
+	v := reflect.ValueOf(value)
+	if v.Kind() != reflect.Ptr {
+		return nil, nil, errors.New("value must be ptr")
+	}
+	if value == nil {
+		return nil, nil, errors.New("value should not be nil")
+	}
+	e := v.Type().Elem()
+	if e.Kind() != reflect.Struct {
+		return nil, nil, errors.New("value must be struct")
+	}
+	tagAndFields := new(tagAndField)
+	reflectStruct(v.Elem(), omit, tagAndFields)
+	tags = tagAndFields.tags
+	fields = tagAndFields.fields
 	if len(tags) == 0 {
 		return nil, nil, errors.New("no tag")
 	}

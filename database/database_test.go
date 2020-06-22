@@ -9,9 +9,13 @@ import (
 	"time"
 )
 
+type testData2 struct {
+	Param1 int `db:"param1"`
+}
+
 type testData struct {
 	Code string `db:"code,omitupdate"`
-	Param1 int `db:"param1"`
+	testData2
 	Param2 string `db:"param2"`
 	Param3 bool `db:"param3"`
 	Param4 float32 `db:"param4"`
