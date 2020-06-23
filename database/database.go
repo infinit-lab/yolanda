@@ -192,7 +192,7 @@ func getSqlString(keys map[string]string, value interface{}, tableName string) (
 	}
 	sqlString := "SELECT "
 	for i, tag := range tags {
-		sqlString += "`" + tag + "`"
+		sqlString += "IFNULL(`" + tag + "`, '')"
 		if i != len(tags) - 1 {
 			sqlString += ", "
 		}
