@@ -15,36 +15,16 @@ var pool *sql.DB
 
 func init() {
 	l.Trace("Initializing database...")
-	url := config.GetString("mysql.url")
-	l.TraceF("Url is %s", url)
-	if url == "" {
-		l.Error("Failed to get mysql url")
-		return
-	}
-
-	maxOpenConns := config.GetInt("mysql.maxOpenConns")
-	l.TraceF("Max open connections is %d", maxOpenConns)
-	if maxOpenConns == 0 {
-		maxOpenConns = 20
-		l.TraceF("Max open connections reset to %d", maxOpenConns)
-	}
-
-	maxIdleConns := config.GetInt("mysql.maxIdleConns")
-	l.TraceF("Max idle connections is %d", maxIdleConns)
-	if maxIdleConns == 0 {
-		maxIdleConns = 5
-		l.TraceF("Max idle connections reset to %d", maxIdleConns)
-	}
-
-	maxLifetime := config.GetInt("mysql.maxLifetime")
-	l.TraceF("Max lifetime is %d", maxLifetime)
-	if maxLifetime == 0 {
-		maxLifetime = 120
-		l.TraceF("Max lifetime reset to %d", maxLifetime)
-	}
 
 	go func() {
 		for {
+			url := config.GetString("mysql.url")
+			l.TraceF("Url is %s", url)
+			if url == "" {
+				l.Error("Failed to get mysql url")
+				time.Sleep(500 * time.Millisecond)
+				continue
+			}
 			var err error
 			pool, err = sql.Open("mysql", url)
 			if err != nil {
@@ -54,6 +34,26 @@ func init() {
 				continue
 			}
 			l.TraceF("Success to open %s", url)
+			maxOpenConns := config.GetInt("mysql.maxOpenConns")
+			l.TraceF("Max open connections is %d", maxOpenConns)
+			if maxOpenConns == 0 {
+				maxOpenConns = 20
+				l.TraceF("Max open connections reset to %d", maxOpenConns)
+			}
+
+			maxIdleConns := config.GetInt("mysql.maxIdleConns")
+			l.TraceF("Max idle connections is %d", maxIdleConns)
+			if maxIdleConns == 0 {
+				maxIdleConns = 5
+				l.TraceF("Max idle connections reset to %d", maxIdleConns)
+			}
+
+			maxLifetime := config.GetInt("mysql.maxLifetime")
+			l.TraceF("Max lifetime is %d", maxLifetime)
+			if maxLifetime == 0 {
+				maxLifetime = 120
+				l.TraceF("Max lifetime reset to %d", maxLifetime)
+			}
 			pool.SetMaxOpenConns(maxOpenConns)
 			pool.SetMaxIdleConns(maxIdleConns)
 			pool.SetConnMaxLifetime(time.Duration(maxLifetime) * time.Second)
