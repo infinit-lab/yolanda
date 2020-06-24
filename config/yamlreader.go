@@ -34,11 +34,8 @@ func (r *yamlReader) exec() {
 		if !strings.Contains(v, "=") {
 			continue
 		}
-		arg := strings.Split(v, "=")
-		if len(arg) != 2 {
-			continue
-		}
-		r.set(arg[0], arg[1])
+		index := strings.Index(v, "=")
+		r.set(v[:index], v[index+1:])
 	}
 	r.print()
 }
