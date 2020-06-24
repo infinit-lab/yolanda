@@ -87,7 +87,15 @@ func Exec(query string, args ...interface{}) (sql.Result, error) {
 	ret, err := pool.Exec(query, args...)
 	if err != nil {
 		l.Error("Exec sql error: ", err)
-		l.Error("Sql is ", query, args)
+		var tempArgs []interface{}
+		for _, arg := range args {
+			if reflect.ValueOf(arg).Kind() == reflect.Ptr {
+				tempArgs = append(tempArgs, reflect.ValueOf(arg).Elem().Interface())
+			} else {
+				tempArgs = append(tempArgs, arg)
+			}
+		}
+		l.Error("Sql is ", query, tempArgs)
 	}
 	return ret, err
 }
@@ -100,7 +108,15 @@ func Query(query string, args ...interface{}) (*sql.Rows, error) {
 	rows, err := pool.Query(query, args...)
 	if err != nil {
 		l.Error("Query sql error: ", err)
-		l.Error("Sql is ", query, args)
+		var tempArgs []interface{}
+		for _, arg := range args {
+			if reflect.ValueOf(arg).Kind() == reflect.Ptr {
+				tempArgs = append(tempArgs, reflect.ValueOf(arg).Elem().Interface())
+			} else {
+				tempArgs = append(tempArgs, arg)
+			}
+		}
+		l.Error("Sql is ", query, tempArgs)
 	}
 	return rows, err
 }
