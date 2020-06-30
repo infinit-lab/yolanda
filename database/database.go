@@ -259,8 +259,8 @@ func SingleTableGetList(keys map[string]string, value interface{}, tableName str
 	if err != nil {
 		return nil, err
 	}
-	rows, err := Query(sqlString)
 	sqlString += " ORDER BY `id` DESC"
+	rows, err := Query(sqlString)
 	if err != nil {
 		return nil, err
 	}
