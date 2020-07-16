@@ -113,8 +113,7 @@ func (s *httpServer) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		}
 		nodeId := s.insertSocket(ws)
 		defer func() {
-			_ = ws.Close()
-			s.removeSocket(nodeId)
+			_ = s.closeSocket(nodeId)
 			websocketHandler.Disconnected(nodeId)
 		}()
 
@@ -384,6 +383,7 @@ func (s *httpServer) closeSocket(nodeId int) error {
 	if ws == nil {
 		return errors.New("获取Websocket失败")
 	}
+	s.removeSocket(nodeId)
 	return ws.Close()
 }
 
