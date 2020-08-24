@@ -363,6 +363,11 @@ func (s *httpServer) socket(nodeId int) *websocket.Conn {
 }
 
 func (s *httpServer) writeMessage(nodeId int, message []byte) error {
+	defer func() {
+		if err := recover(); err != nil {
+			l.Error(err)
+		}
+	}()
 	ws := s.socket(nodeId)
 	if ws == nil {
 		return errors.New("获取Websocket失败")
@@ -371,6 +376,11 @@ func (s *httpServer) writeMessage(nodeId int, message []byte) error {
 }
 
 func (s *httpServer) writeBytes(nodeId int, bytes []byte) error {
+	defer func() {
+		if err := recover(); err != nil {
+			l.Error(err)
+		}
+	}()
 	ws := s.socket(nodeId)
 	if ws == nil {
 		return errors.New("获取Websocket失败")
